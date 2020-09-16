@@ -30,6 +30,22 @@ namespace InventoryManager
 
             return ds;
         }
+
+        private static void DeleteData(string querySql)
+        {
+            //sqlquery= "DELETE FROM devices WHERE id= 1"
+            // sqlquery = "DELETE FROM employers WHERE employee_id= 1"
+          
+            NpgsqlConnection conn = new NpgsqlConnection(connString);
+            
+            conn.Open();
+
+            var command = new NpgsqlCommand(querySql, conn);
+
+            command.ExecuteReader();
+
+            conn.Close();
+        }
         static public List<Employee> returnAllEmployees()
         {
             DataSet ds = new DataSet();
@@ -102,12 +118,36 @@ namespace InventoryManager
 
         static public bool DeleteEmployee(int employeeId)
         {
-            return false;
+            DataSet ds = new DataSet();
+
+            ds = GetData($"SELECT * FROM employers WHERE id= {employeeId}");
+
+            if (ds.Tables[0].Rows.Count == 1)
+            {
+                DeleteData($"DELETE FROM employers WHERE employee_id= {employeeId}");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         static public bool Delete_Device(int id)
         {
-            return false;
+            DataSet ds = new DataSet();
+
+            ds = GetData($"SELECT * FROM devices WHERE id= {id}");
+
+            if (ds.Tables[0].Rows.Count == 1)
+            {
+                DeleteData($"DELETE FROM devices WHERE id= {id}");
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }
