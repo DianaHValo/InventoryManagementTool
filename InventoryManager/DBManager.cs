@@ -11,14 +11,13 @@ namespace InventoryManager
     static class DBManager
     {
         private const string connString = "Host=127.0.0.1;Username=postgres;Password=Password1;Database=VirtualInventoryManagerDB";
-        private static DataSet nushcenume(string querySql)
+        private static DataSet GetData(string querySql)
         {
             DataSet ds = new DataSet();
 
             NpgsqlConnection conn = new NpgsqlConnection(connString);
             conn.Open();
-            // quite complex sql statement
-            querySql = "SELECT * FROM employees";
+
             // data adapter making request from our connection
             NpgsqlDataAdapter da = new NpgsqlDataAdapter(querySql, conn);
             // i always reset DataSet before i do
@@ -37,7 +36,7 @@ namespace InventoryManager
 
             var resultList = new List<Employee>();
 
-            nushcenume("SELECT * FROM employees");
+            ds = GetData("SELECT * FROM employees");
 
             for (int i=0; i< ds.Tables[0].Rows.Count; i++)
             {
@@ -62,7 +61,7 @@ namespace InventoryManager
 
             var resultList = new List<Device>();
 
-            nushcenume("SELECT * FROM devices");
+            ds = GetData("SELECT * FROM devices");
 
             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
             {
