@@ -11,26 +11,35 @@ namespace InventoryManager
     static class DBManager
     {
         private const string connString = "Host=127.0.0.1;Username=postgres;Password=Password1;Database=VirtualInventoryManagerDB";
-
-        static public List<Employee> returnAllEmployees()
+        private static DataSet nushcenume(string querySql)
         {
             DataSet ds = new DataSet();
-            var resultList = new List<Employee>();
 
             NpgsqlConnection conn = new NpgsqlConnection(connString);
             conn.Open();
             // quite complex sql statement
-            string sql = "SELECT * FROM employees";
+            querySql = "SELECT * FROM employees";
             // data adapter making request from our connection
-            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, conn);
+            NpgsqlDataAdapter da = new NpgsqlDataAdapter(querySql, conn);
             // i always reset DataSet before i do
             // something with it.... i don't know why :-)
             ds.Reset();
             // filling DataSet with result from NpgsqlDataAdapter
             da.Fill(ds);
             // since it C# DataSet can handle multiple tables, we will select first
+            conn.Close();
 
-            for(int i=0; i< ds.Tables[0].Rows.Count; i++)
+            return ds;
+        }
+        static public List<Employee> returnAllEmployees()
+        {
+            DataSet ds = new DataSet();
+
+            var resultList = new List<Employee>();
+
+            nushcenume("SELECT * FROM employees");
+
+            for (int i=0; i< ds.Tables[0].Rows.Count; i++)
             {
                 var rand = ds.Tables[0].Rows[i].ItemArray;
                 Employee emp = new Employee();
@@ -44,14 +53,32 @@ namespace InventoryManager
 
                 resultList.Add(emp);
             }
-
-            conn.Close();
             return resultList;
         }
 
         static public List<Device> returnAllDevices()
         {
-            return null;
+            DataSet ds = new DataSet();
+
+            var resultList = new List<Device>();
+
+            nushcenume("SELECT * FROM devices");
+
+            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+            {
+                var rand = ds.Tables[0].Rows[i].ItemArray;
+                Device dev = new Device();
+
+                dev.id = Convert.ToInt32(rand[0].ToString());
+                dev.itemName = rand[1].ToString();
+                dev.itemModel = rand[2].ToString();
+                dev.itemLocation = rand[3].ToString();
+                dev.itemStatus = rand[4].ToString();
+                dev.inventoryNum = rand[5].ToString();
+
+                resultList.Add(dev);
+            }
+            return resultList;
         }
 
         static public bool AddEmployee(Employee newEmployee)
@@ -79,10 +106,14 @@ namespace InventoryManager
             return false;
         }
 
-        static public bool DeleteDevice(int id)
+        static public bool Delete_Device(int id)
         {
             return false;
         }
 
     }
+
+   
+
+    
 }
