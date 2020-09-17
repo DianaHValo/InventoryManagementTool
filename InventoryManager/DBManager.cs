@@ -98,12 +98,52 @@ namespace InventoryManager
 
         static public bool AddEmployee(Employee newEmployee)
         {
-            return false;
+            DataSet ds = new DataSet();
+           
+            ds = GetData($"SELECT * FROM employees WHERE employee_id= {newEmployee.employeeId}");
+
+            if (ds.Tables[0].Rows.Count == 1)
+            {
+                NpgsqlConnection conn = new NpgsqlConnection(connString);
+
+                conn.Open();
+
+                string insert1 = $"INSERT INTO employees(first_name,last_name,phone_number,email,adress) " +
+                    $"VALUES('{newEmployee.firstName}''{newEmployee.lastName}''{newEmployee.phoneNum}''{newEmployee.eMail}''{newEmployee.adress}')";
+
+                conn.Close();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         static public bool AddDevice(Device newDevice)
         {
-            return false;
+            DataSet ds = new DataSet();
+
+            ds = GetData($"SELECT * FROM devices WHERE id= {newDevice.id}");
+
+            if (ds.Tables[0].Rows.Count == 1)
+            {
+                NpgsqlConnection conn = new NpgsqlConnection(connString);
+
+                conn.Open();
+
+                string insert1 = $"INSERT INTO devices(item_name,item_model,item_location,item_status,inventory_number) " +
+                    $"VALUES('{newDevice.itemName}''{newDevice.itemModel}''{newDevice.itemLocation}''{newDevice.itemStatus}''{newDevice.inventoryNum}')";
+
+                conn.Close();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         static public bool EditEmployee(Employee editedEmployee)
